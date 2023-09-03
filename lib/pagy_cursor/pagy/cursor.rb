@@ -22,23 +22,46 @@ class Pagy
 
         @comparation = 'lt' # arel table less than
         @position = @before
-        @order = @reorder.merge({ :created_at => :desc , @primary_key => :desc })
+
+        if @reorder.is_a?(Hash)
+          @order = @reorder.merge({ :created_at => :desc , @primary_key => :desc })
+        elsif @reorder.is_a?(Array)
+          @reorder << { :created_at => :desc , @primary_key => :desc }
+          @order = @reorder
+        end
 
         if @after.present? || (@reorder.present? && @reorder.values.uniq.first.to_sym == :asc)
           @comparation = 'gt' # arel table greater than
           @position = @after
-          @order = @reorder.merge({ :created_at => :asc , @primary_key => :asc })
+          if @reorder.is_a?(Hash)
+            @order = @reorder.merge({ :created_at => :asc , @primary_key => :asc })
+          elsif @reorder.is_a?(Array)
+            @reorder << { :created_at => :asc , @primary_key => :asc }
+            @order = @reorder
+          end
         end
       else
 
         @comparation = 'lt'
         @position = @before
-        @order = @reorder.merge({ @primary_key => :desc })
+
+        if @reorder.is_a?(Hash)
+          @order = @reorder.merge({ @primary_key => :desc })
+        elsif @reorder.is_a?(Array)
+          @reorder << { @primary_key => :desc }
+          @order = @reorder
+        end
 
         if @after.present? || (@reorder.present? && @reorder.values.uniq.first.to_sym == :asc)
           @comparation = 'gt'
           @position = @after
-          @order = @reorder.merge({ @primary_key => :asc })
+
+          if @reorder.is_a?(Hash)
+            @order = @reorder.merge({ @primary_key => :asc })
+          elsif @reorder.is_a?(Array)
+            @reorder << { @primary_key => :asc }
+            @order = @reorder
+          end
         end
       end
     end
